@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Summer Lock‑In Command Center</title>
-  <!-- Chart.js for progress graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <!-- html5-qrcode for barcode scanning -->
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -180,6 +178,30 @@
         { name: "Egg Muffins", macros: { cal: 380, p: 30, c: 8, f: 24 }, ingredients: "4 eggs, diced ham, cheese, bell pepper", instructions: "1. Whisk eggs, pour into muffin tin, add fillings.\n2. Bake at 350°F for 20 mins." },
         { name: "Peanut Butter Banana Shake", macros: { cal: 450, p: 35, c: 40, f: 18 }, ingredients: "2 scoops protein, 1 banana, 2 tbsp PB, milk", instructions: "1. Blend until smooth." },
         { name: "Chicken Fajita Bowl", macros: { cal: 600, p: 50, c: 45, f: 18 }, ingredients: "chicken, bell peppers, onions, black beans, rice", instructions: "1. Sauté chicken and veggies.\n2. Serve over rice and beans." }
+      ],
+      // LOCAL FOOD DATABASE (per 100g unless serving specified)
+      localFoods: [
+        { name: "Banana", serving: "1 medium (118g)", macros: { cal: 105, p: 1.3, c: 27, f: 0.4 }, per100g: false, grams: 118 },
+        { name: "Chicken Breast (cooked, skinless)", serving: "per 100g", macros: { cal: 165, p: 31, c: 0, f: 3.6 }, per100g: true },
+        { name: "Beef Steak (lean, grilled)", serving: "per 100g", macros: { cal: 250, p: 26, c: 0, f: 15 }, per100g: true },
+        { name: "Salmon (baked)", serving: "per 100g", macros: { cal: 206, p: 22, c: 0, f: 13 }, per100g: true },
+        { name: "Egg (whole, large)", serving: "1 large (50g)", macros: { cal: 70, p: 6, c: 0.6, f: 5 }, per100g: false, grams: 50 },
+        { name: "Egg White", serving: "1 large (33g)", macros: { cal: 17, p: 3.6, c: 0.2, f: 0 }, per100g: false, grams: 33 },
+        { name: "White Rice (cooked)", serving: "per 100g", macros: { cal: 130, p: 2.7, c: 28, f: 0.3 }, per100g: true },
+        { name: "Brown Rice (cooked)", serving: "per 100g", macros: { cal: 123, p: 2.7, c: 25, f: 1 }, per100g: true },
+        { name: "Oats (dry)", serving: "per 100g", macros: { cal: 389, p: 16.9, c: 66, f: 6.9 }, per100g: true },
+        { name: "Sweet Potato (baked)", serving: "per 100g", macros: { cal: 90, p: 2, c: 21, f: 0.1 }, per100g: true },
+        { name: "Broccoli (steamed)", serving: "per 100g", macros: { cal: 35, p: 2.4, c: 7, f: 0.4 }, per100g: true },
+        { name: "Spinach (raw)", serving: "per 100g", macros: { cal: 23, p: 2.9, c: 3.6, f: 0.4 }, per100g: true },
+        { name: "Avocado", serving: "1/2 fruit (68g)", macros: { cal: 114, p: 1.3, c: 6, f: 10.5 }, per100g: false, grams: 68 },
+        { name: "Olive Oil", serving: "1 tbsp (14g)", macros: { cal: 119, p: 0, c: 0, f: 13.5 }, per100g: false, grams: 14 },
+        { name: "Peanut Butter", serving: "1 tbsp (16g)", macros: { cal: 94, p: 4, c: 3, f: 8 }, per100g: false, grams: 16 },
+        { name: "Whole Milk", serving: "1 cup (244g)", macros: { cal: 149, p: 8, c: 12, f: 8 }, per100g: false, grams: 244 },
+        { name: "Greek Yogurt (plain, nonfat)", serving: "per 100g", macros: { cal: 59, p: 10.3, c: 3.6, f: 0.7 }, per100g: true },
+        { name: "Cottage Cheese (low‑fat)", serving: "per 100g", macros: { cal: 81, p: 14, c: 3, f: 1 }, per100g: true },
+        { name: "Apple", serving: "1 medium (182g)", macros: { cal: 95, p: 0.5, c: 25, f: 0.3 }, per100g: false, grams: 182 },
+        { name: "Orange", serving: "1 medium (131g)", macros: { cal: 62, p: 1.2, c: 15, f: 0.2 }, per100g: false, grams: 131 },
+        { name: "Almonds", serving: "1 oz (28g)", macros: { cal: 164, p: 6, c: 6, f: 14 }, per100g: false, grams: 28 },
       ]
     };
 
@@ -307,13 +329,9 @@
         let sex = document.getElementById('new-sex').value;
         let goal = document.getElementById('new-goal').value;
         if (isNaN(age) || isNaN(weight) || isNaN(height)) return alert('Enter valid numbers');
-        // Mifflin-St Jeor BMR
         let bmr;
-        if (sex==='male') {
-          bmr = 10 * weight * 0.453592 + 6.25 * height * 2.54 - 5 * age + 5;
-        } else {
-          bmr = 10 * weight * 0.453592 + 6.25 * height * 2.54 - 5 * age - 161;
-        }
+        if (sex==='male') bmr = 10 * weight * 0.453592 + 6.25 * height * 2.54 - 5 * age + 5;
+        else bmr = 10 * weight * 0.453592 + 6.25 * height * 2.54 - 5 * age - 161;
         let tdee = Math.round(bmr * 1.55);
         let calTarget;
         if (goal==='bulk') calTarget = tdee + 300;
@@ -321,17 +339,11 @@
         else calTarget = tdee;
         let protein, carbs, fat;
         if (goal==='bulk') {
-          protein = Math.round(0.3 * calTarget / 4);
-          carbs = Math.round(0.4 * calTarget / 4);
-          fat = Math.round(0.3 * calTarget / 9);
+          protein = Math.round(0.3 * calTarget / 4); carbs = Math.round(0.4 * calTarget / 4); fat = Math.round(0.3 * calTarget / 9);
         } else if (goal==='cut') {
-          protein = Math.round(0.4 * calTarget / 4);
-          carbs = Math.round(0.3 * calTarget / 4);
-          fat = Math.round(0.3 * calTarget / 9);
+          protein = Math.round(0.4 * calTarget / 4); carbs = Math.round(0.3 * calTarget / 4); fat = Math.round(0.3 * calTarget / 9);
         } else {
-          protein = Math.round(0.3 * calTarget / 4);
-          carbs = Math.round(0.4 * calTarget / 4);
-          fat = Math.round(0.3 * calTarget / 9);
+          protein = Math.round(0.3 * calTarget / 4); carbs = Math.round(0.4 * calTarget / 4); fat = Math.round(0.3 * calTarget / 9);
         }
         APP.profiles[name] = {
           name, age, weight, height, sex, goal,
@@ -356,7 +368,6 @@
 
     function buildAllTabs() {
       if (!APP.currentProfile) return;
-      // Dashboard
       document.getElementById('tab-dashboard').innerHTML = `
         <div class="card">
           <h2>Welcome, <span id="dash-name"></span> | Goal: <span id="dash-goal"></span></h2>
@@ -379,7 +390,7 @@
       switchTab('dashboard');
     }
 
-    // -------- WORKOUT TAB (UPDATED) ----------
+    // ========== WORKOUT (unchanged) ==========
     function buildWorkoutTab() {
       let p = APP.profiles[APP.currentProfile];
       let schedule = p.workoutSchedule;
@@ -401,8 +412,7 @@
       let exDiv = document.getElementById('workout-exercises');
       if (workoutName !== 'Rest') {
         let exercises = getExercisesForWorkout(workoutName);
-        let list = exercises.map(e => `<li>${e.name}: ${e.sets} sets × ${e.reps}</li>`).join('');
-        exDiv.innerHTML = `<ul>${list}</ul>`;
+        exDiv.innerHTML = '<ul>'+exercises.map(e => `<li>${e.name}: ${e.sets} sets × ${e.reps}</li>`).join('')+'</ul>';
         document.getElementById('log-workout-btn').onclick = () => {
           document.getElementById('workout-log-area').classList.toggle('hidden');
           document.getElementById('workout-log-area').innerHTML = exercises.map(e => `
@@ -421,7 +431,6 @@
         exDiv.innerHTML = '<p>Enjoy your rest day — stretch, foam roll, or work on stickhandling!</p>';
       }
     }
-
     function getExercisesForWorkout(type) {
       const exercises = {
         Push: [
@@ -452,13 +461,14 @@
       return exercises[type] || [];
     }
 
-    // -------- DIET TAB (unchanged) ----------
+    // ========== DIET TAB (UPDATED WITH LOCAL FOODS & MACRO TARGETS) ==========
     function buildDietTab() {
+      let p = APP.profiles[APP.currentProfile];
       document.getElementById('tab-diet').innerHTML = `
         <div class="card">
           <h2>Daily Food Log (${APP.today})</h2>
           <div class="flex-row">
-            <input type="text" id="food-search" placeholder="Search food (e.g., banana)" />
+            <input type="text" id="food-search" placeholder="Search food (e.g., banana, chicken breast)" />
             <button id="search-food-btn">Search</button>
           </div>
           <div class="flex-row">
@@ -478,14 +488,14 @@
           <h3>Today's Log:</h3>
           <div id="food-log-list"></div>
           <div class="macro-bar">
-            <div class="macro-item"><span>Total Cal</span><strong id="today-total-cal">0</strong></div>
-            <div class="macro-item"><span>Protein</span><strong id="today-total-p">0</strong></div>
-            <div class="macro-item"><span>Carbs</span><strong id="today-total-c">0</strong></div>
-            <div class="macro-item"><span>Fat</span><strong id="today-total-f">0</strong></div>
+            <div class="macro-item"><span>Calories</span><strong id="today-total-cal">0</strong><span style="font-size:0.8rem;"> / ${p.macroTargets.cal}</span></div>
+            <div class="macro-item"><span>Protein</span><strong id="today-total-p">0</strong><span style="font-size:0.8rem;"> / ${p.macroTargets.protein}g</span></div>
+            <div class="macro-item"><span>Carbs</span><strong id="today-total-c">0</strong><span style="font-size:0.8rem;"> / ${p.macroTargets.carbs}g</span></div>
+            <div class="macro-item"><span>Fat</span><strong id="today-total-f">0</strong><span style="font-size:0.8rem;"> / ${p.macroTargets.fat}g</span></div>
           </div>
         </div>`;
       renderFoodLog();
-      document.getElementById('search-food-btn').onclick = searchOpenFoodFacts;
+      document.getElementById('search-food-btn').onclick = searchFoods;
       document.getElementById('scan-barcode-btn').onclick = startBarcodeScanner;
       document.getElementById('add-custom-food-btn').onclick = () => document.getElementById('custom-food-form').classList.toggle('hidden');
       document.getElementById('save-custom-food').onclick = saveCustomFood;
@@ -494,20 +504,58 @@
       });
     }
 
-    function searchOpenFoodFacts() {
-      let query = document.getElementById('food-search').value.trim();
+    function searchFoods() {
+      let query = document.getElementById('food-search').value.trim().toLowerCase();
       if (!query) return;
-      fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&json=1&page_size=5`)
-        .then(r=>r.json())
-        .then(data => {
-          let results = data.products.filter(p=>p.nutriments && p.product_name);
-          let html = results.map(p => {
-            let cal = p.nutriments['energy-kcal_100g'] ? Math.round(p.nutriments['energy-kcal_100g'] * (p.serving_size ? p.serving_size/100 : 1)) : '?';
-            return `<div class="list-item"><span>${p.product_name} (${cal} kcal)</span><button data-barcode="${p.code}">Add</button></div>`;
-          }).join('');
-          document.getElementById('food-results').innerHTML = html;
-          document.querySelectorAll('#food-results button').forEach(btn => btn.onclick = () => addFoodByBarcode(btn.dataset.barcode));
-        });
+      // search local DB first
+      let localMatches = APP.localFoods.filter(f => f.name.toLowerCase().includes(query));
+      let html = '';
+      if (localMatches.length > 0) {
+        html += localMatches.map(f => {
+          let servingText = f.per100g ? 'per 100g' : f.serving;
+          return `<div class="list-item">
+            <span>${f.name} (${servingText})</span>
+            <button data-name="${f.name}" class="add-local-food">Add</button>
+          </div>`;
+        }).join('');
+      } else {
+        // fallback to API
+        fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&json=1&page_size=5`)
+          .then(r=>r.json())
+          .then(data => {
+            let results = data.products.filter(p=>p.nutriments && p.product_name);
+            let html2 = results.map(p => {
+              let cal = p.nutriments['energy-kcal_100g'] ? Math.round(p.nutriments['energy-kcal_100g'] * (p.serving_size ? p.serving_size/100 : 1)) : '?';
+              return `<div class="list-item"><span>${p.product_name} (${cal} kcal)</span><button data-barcode="${p.code}">Add</button></div>`;
+            }).join('');
+            document.getElementById('food-results').innerHTML = html2;
+            document.querySelectorAll('#food-results button').forEach(btn => btn.onclick = () => addFoodByBarcode(btn.dataset.barcode));
+          });
+        return;
+      }
+      document.getElementById('food-results').innerHTML = html;
+      document.querySelectorAll('.add-local-food').forEach(btn => btn.onclick = () => addLocalFood(btn.dataset.name));
+    }
+
+    function addLocalFood(name) {
+      let food = APP.localFoods.find(f => f.name === name);
+      if (!food) return;
+      if (food.per100g) {
+        let grams = prompt(`How many grams of ${food.name}?`, '100');
+        if (!grams || isNaN(grams)) return;
+        grams = parseFloat(grams);
+        let factor = grams / 100;
+        let macros = {
+          cal: Math.round(food.macros.cal * factor),
+          protein: Math.round(food.macros.protein * factor * 10) / 10,
+          carbs: Math.round(food.macros.carbs * factor * 10) / 10,
+          fat: Math.round(food.macros.fat * factor * 10) / 10
+        };
+        addFoodToLog({ name: `${food.name} (${grams}g)`, macros, serving: grams+'g' });
+      } else {
+        // predefined serving
+        addFoodToLog({ name: food.name + ' (' + food.serving + ')', macros: {...food.macros}, serving: food.serving });
+      }
     }
 
     function startBarcodeScanner() {
@@ -534,9 +582,7 @@
           else alert('Product not found');
         });
     }
-
     function addFoodByBarcode(code) { lookupBarcode(code); }
-
     function addFoodFromProduct(product) {
       let serving = product.serving_size ? product.serving_size : 100;
       let factor = serving / 100;
@@ -544,8 +590,7 @@
       let protein = Math.round((product.nutriments.proteins_100g || 0) * factor);
       let carbs = Math.round((product.nutriments.carbohydrates_100g || 0) * factor);
       let fat = Math.round((product.nutriments.fat_100g || 0) * factor);
-      let foodItem = { name: product.product_name, barcode: product.code, serving: serving + 'g', macros: { cal, protein, carbs, fat } };
-      addFoodToLog(foodItem);
+      addFoodToLog({ name: product.product_name, barcode: product.code, serving: serving + 'g', macros: { cal, protein, carbs, fat } });
     }
 
     function addFoodToLog(food) {
@@ -592,10 +637,10 @@
       document.getElementById('today-total-f').textContent = totals.fat+'g';
     }
 
-    // -------- RECIPES TAB (UPDATED WITH DETAIL VIEW) ----------
+    // ========== RECIPES (unchanged) ==========
     function buildRecipesTab() {
       let top5 = getDailyTop5();
-      let html = `
+      document.getElementById('tab-recipes').innerHTML = `
         <div class="card">
           <h2>🍳 Daily Top 5 Recipes</h2>
           ${top5.map(r => `<div class="list-item"><strong>${r.name}</strong> (${r.macros.cal}kcal) <button class="view-recipe-btn" data-name="${r.name}">View</button></div>`).join('')}
@@ -619,13 +664,10 @@
           </div>
           <button id="save-recipe">Save Recipe</button>
         </div>`;
-      document.getElementById('tab-recipes').innerHTML = html;
+      document.querySelectorAll('.view-recipe-btn').forEach(btn => btn.onclick = () => showRecipeDetail(btn.dataset.name));
       document.getElementById('recipe-search').addEventListener('input', filterRecipes);
       document.getElementById('save-recipe').onclick = addCustomRecipe;
-      // attach view buttons for top5
-      document.querySelectorAll('.view-recipe-btn').forEach(btn => btn.onclick = () => showRecipeDetail(btn.dataset.name));
     }
-
     function filterRecipes() {
       let q = document.getElementById('recipe-search').value.toLowerCase();
       let allRecipes = APP.recipeDB.concat(APP.profiles[APP.currentProfile].customRecipes);
@@ -634,7 +676,6 @@
         <div class="list-item"><strong>${r.name}</strong> (${r.macros.cal}kcal) <button class="view-recipe-btn" data-name="${r.name}">View</button></div>`).join('');
       document.querySelectorAll('#recipe-results .view-recipe-btn').forEach(btn => btn.onclick = () => showRecipeDetail(btn.dataset.name));
     }
-
     function showRecipeDetail(name) {
       let allRecipes = APP.recipeDB.concat(APP.profiles[APP.currentProfile].customRecipes);
       let recipe = allRecipes.find(r => r.name === name);
@@ -647,10 +688,8 @@
           <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
           <p><strong>Instructions:</strong><br>${recipe.instructions.replace(/\n/g,'<br>')}</p>
           <button class="btn-secondary" onclick="document.getElementById('recipe-detail-container').innerHTML=''">Close</button>
-        </div>
-      `;
+        </div>`;
     }
-
     function addCustomRecipe() {
       let name = document.getElementById('rec-name').value.trim();
       if (!name) return;
@@ -667,7 +706,7 @@
       buildRecipesTab();
     }
 
-    // -------- FINANCE TAB ----------
+    // ========== FINANCE ==========
     function buildFinanceTab() {
       let p = APP.profiles[APP.currentProfile];
       document.getElementById('tab-finance').innerHTML = `
@@ -694,7 +733,6 @@
         updateAllUI();
       };
     }
-
     function renderTransactions() {
       let p = APP.profiles[APP.currentProfile];
       let list = p.transactions.slice().reverse();
@@ -702,7 +740,7 @@
         <div class="list-item"><span>${t.date} - ${t.desc}</span> <span style="color:${t.amount>=0?'lightgreen':'#ff6b6b'}">${t.amount>=0?'+':''}$${t.amount}</span></div>`).join('');
     }
 
-    // -------- PROGRESS TAB ----------
+    // ========== PROGRESS ==========
     function buildProgressTab() {
       document.getElementById('tab-progress').innerHTML = `
         <div class="card">
@@ -741,7 +779,6 @@
         renderLifts();
       };
     }
-
     let weightChartInstance;
     function renderWeightChart() {
       let p = APP.profiles[APP.currentProfile];
@@ -755,23 +792,60 @@
         options: { scales: { y: { beginAtZero: false } } }
       });
     }
-
     function renderLifts() {
       let p = APP.profiles[APP.currentProfile];
       let html = p.liftPRs.map(l => `<div class="list-item"><span>${l.lift}: ${l.weight} lbs</span><span>${l.date}</span></div>`).join('');
       document.getElementById('lift-list').innerHTML = html || '<p>No PRs logged yet.</p>';
     }
 
-    // -------- SETTINGS / EXPORT IMPORT ----------
+    // ========== SETTINGS (WITH AGE UPDATE) ==========
     function buildSettingsTab() {
+      let p = APP.profiles[APP.currentProfile];
       document.getElementById('tab-settings').innerHTML = `
         <div class="card">
-          <h2>Profile: ${APP.currentProfile}</h2>
+          <h2>Profile: ${p.name}</h2>
+          <p>Age: <span id="current-age">${p.age}</span></p>
+          <div class="flex-row">
+            <input type="number" id="new-age-input" placeholder="New age" />
+            <button id="update-age-btn">Update Age</button>
+          </div>
           <button id="export-btn2">⬇ Export All Data</button>
           <button class="btn-secondary" id="import-btn2">⬆ Import Data</button>
           <input type="file" id="import-file2" accept=".json" hidden />
           <button class="btn-secondary" id="switch-profile-btn">🔄 Switch Profile</button>
         </div>`;
+      document.getElementById('update-age-btn').onclick = () => {
+        let newAge = parseInt(document.getElementById('new-age-input').value);
+        if (isNaN(newAge) || newAge <= 0) return alert('Enter valid age');
+        let recalc = confirm('Do you want to recalculate your calorie/macro targets based on the new age?');
+        if (recalc) {
+          // recalc using current weight/height/goal
+          let { weight, height, sex, goal } = p;
+          let bmr;
+          if (sex==='male') bmr = 10 * weight * 0.453592 + 6.25 * height * 2.54 - 5 * newAge + 5;
+          else bmr = 10 * weight * 0.453592 + 6.25 * height * 2.54 - 5 * newAge - 161;
+          let tdee = Math.round(bmr * 1.55);
+          let calTarget;
+          if (goal==='bulk') calTarget = tdee + 300;
+          else if (goal==='cut') calTarget = tdee - 500;
+          else calTarget = tdee;
+          let protein, carbs, fat;
+          if (goal==='bulk') {
+            protein = Math.round(0.3 * calTarget / 4); carbs = Math.round(0.4 * calTarget / 4); fat = Math.round(0.3 * calTarget / 9);
+          } else if (goal==='cut') {
+            protein = Math.round(0.4 * calTarget / 4); carbs = Math.round(0.3 * calTarget / 4); fat = Math.round(0.3 * calTarget / 9);
+          } else {
+            protein = Math.round(0.3 * calTarget / 4); carbs = Math.round(0.4 * calTarget / 4); fat = Math.round(0.3 * calTarget / 9);
+          }
+          p.macroTargets = { cal: calTarget, protein, carbs, fat };
+        }
+        p.age = newAge;
+        saveCurrentProfile();
+        document.getElementById('current-age').textContent = newAge;
+        buildDietTab(); // refresh diet tab to show new targets
+        updateAllUI();
+        alert('Age updated!');
+      };
       document.getElementById('export-btn2').onclick = exportData;
       document.getElementById('import-btn2').onclick = () => document.getElementById('import-file2').click();
       document.getElementById('import-file2').onchange = importData;
